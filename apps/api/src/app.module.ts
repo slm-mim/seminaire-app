@@ -8,6 +8,8 @@ import { UsersModule } from './modules/users/users.module';
 import { SeminarsModule } from './modules/seminars/seminars.module';
 import { ContactsModule } from './modules/contacts/contacts.module';
 import { RegistrationsModule } from './modules/registrations/registrations.module';
+import { EmailsModule } from './modules/emails/emails.module';
+import { QaModule } from './modules/qa/qa.module';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { RegistrationsModule } from './modules/registrations/registrations.modul
     SeminarsModule,
     ContactsModule,
     RegistrationsModule,
+    EmailsModule,
+    QaModule,
   ],
   providers: [
     {
