@@ -13,6 +13,7 @@ import { QaModule } from './modules/qa/qa.module';
 import { CheckinModule } from './modules/checkin/checkin.module';
 import { DriveModule } from './modules/drive/drive.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     CheckinModule,
     DriveModule,
     DashboardModule,
+    JobsModule,
   ],
   providers: [
     {

@@ -3,6 +3,7 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { SeminarStatus, RegistrationStatus } from 'shared-types';
 import { SeminarsService } from './seminars.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { JobsService } from '../../jobs/jobs.service';
 
 const mockSeminar = {
   id: 'seminar-uuid-1',
@@ -21,6 +22,13 @@ const mockSeminar = {
   updatedAt: new Date(),
   creator: { id: 'user-uuid-1', firstName: 'Admin', lastName: 'User' },
   _count: { registrations: 0 },
+};
+
+const mockJobsService = {
+  scheduleReminder: jest.fn().mockResolvedValue(undefined),
+  scheduleRegistrationClose: jest.fn().mockResolvedValue(undefined),
+  cancelReminder: jest.fn().mockResolvedValue(undefined),
+  cancelRegistrationClose: jest.fn().mockResolvedValue(undefined),
 };
 
 const mockPrismaService = {
@@ -44,6 +52,7 @@ describe('SeminarsService', () => {
       providers: [
         SeminarsService,
         { provide: PrismaService, useValue: mockPrismaService },
+        { provide: JobsService, useValue: mockJobsService },
       ],
     }).compile();
 

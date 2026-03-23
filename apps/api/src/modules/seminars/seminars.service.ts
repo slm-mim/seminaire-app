@@ -2,14 +2,21 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { SeminarStatus, RegistrationStatus } from 'shared-types';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateSeminarInput, UpdateSeminarInput } from 'validation';
+import { JobsService } from '../../jobs/jobs.service';
 
 @Injectable()
 export class SeminarsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(forwardRef(() => JobsService))
+    private readonly jobsService: JobsService,
+  ) {}
 
   async findAll(status?: SeminarStatus) {
     return this.prisma.seminar.findMany({
@@ -97,10 +104,26 @@ export class SeminarsService {
       );
     }
 
-    return this.prisma.seminar.update({
+    const updated = await this.prisma.seminar.update({
       where: { id },
       data: { status: newStatus },
     });
+
+    if (newStatus === SeminarStatus.PUBLISHED) {
+      const seminarDate = new Date(seminar.date);
+
+      // Schedule reminder: seminar.date minus reminderDays days
+      const reminderDate = new Date(seminarDate);
+      reminderDate.setDate(reminderDate.getDate() - seminar.reminderDays);
+      await this.jobsService.scheduleReminder(id, reminderDate);
+
+      // Schedule registration close: seminar.date minus registrationDeadline hours
+      const closeDate = new Date(seminarDate);
+      closeDate.setHours(closeDate.getHours() - seminar.registrationDeadline);
+      await this.jobsService.scheduleRegistrationClose(id, closeDate);
+    }
+
+    return updated;
   }
 
   async remove(id: string) {

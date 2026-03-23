@@ -23,6 +23,7 @@
     "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@nestjs/bullmq": "^11.0.4",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.0.1",
@@ -35,6 +36,7 @@
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "bcrypt": "^6.0.0",
+    "bullmq": "^5.71.0",
     "cookie-parser": "^1.4.7",
     "helmet": "^8.1.0",
     "passport": "^0.7.0",
