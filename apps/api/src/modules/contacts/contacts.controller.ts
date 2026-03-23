@@ -18,13 +18,17 @@ import { createContactSchema, updateContactSchema } from 'validation';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { BrevoSyncService } from './brevo-sync.service';
 import { ContactsService } from './contacts.service';
 
 @Controller('contacts')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN, UserRole.ORGANIZER)
 export class ContactsController {
-  constructor(private readonly contactsService: ContactsService) {}
+  constructor(
+    private readonly contactsService: ContactsService,
+    private readonly brevoSyncService: BrevoSyncService,
+  ) {}
 
   @Get()
   findAll(@Query('search') search?: string) {
@@ -68,5 +72,17 @@ export class ContactsController {
   @HttpCode(HttpStatus.OK)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.contactsService.remove(id);
+  }
+
+  @Post('sync/to-brevo')
+  @HttpCode(HttpStatus.OK)
+  syncToBrevo() {
+    return this.brevoSyncService.syncAllToBrevo();
+  }
+
+  @Post('sync/from-brevo')
+  @HttpCode(HttpStatus.OK)
+  syncFromBrevo() {
+    return this.brevoSyncService.syncFromBrevo();
   }
 }

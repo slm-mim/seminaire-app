@@ -8,6 +8,10 @@ export const envSchema = z.object({
   BREVO_API_KEY: z.string().optional(),
   SENTRY_DSN: z.string().url().optional(),
   DISCORD_WEBHOOK_URL: z.string().url().optional(),
+  GOOGLE_DRIVE_CLIENT_ID: z.string().optional(),
+  GOOGLE_DRIVE_CLIENT_SECRET: z.string().optional(),
+  GOOGLE_DRIVE_REFRESH_TOKEN: z.string().optional(),
+  GOOGLE_DRIVE_FOLDER_ID: z.string().optional(),
   CORS_ORIGIN: z.string().url().default('http://localhost:3001'),
   PORT: z.coerce.number().default(3000),
   NODE_ENV: z

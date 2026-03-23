@@ -9,6 +9,7 @@ import { SeminarStatus, RegistrationStatus } from 'shared-types';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateSeminarInput, UpdateSeminarInput } from 'validation';
 import { JobsService } from '../../jobs/jobs.service';
+import { DriveService } from '../drive/drive.service';
 
 @Injectable()
 export class SeminarsService {
@@ -16,6 +17,7 @@ export class SeminarsService {
     private readonly prisma: PrismaService,
     @Inject(forwardRef(() => JobsService))
     private readonly jobsService: JobsService,
+    private readonly driveService: DriveService,
   ) {}
 
   async findAll(status?: SeminarStatus) {
@@ -121,6 +123,13 @@ export class SeminarsService {
       const closeDate = new Date(seminarDate);
       closeDate.setHours(closeDate.getHours() - seminar.registrationDeadline);
       await this.jobsService.scheduleRegistrationClose(id, closeDate);
+
+      // Create Google Drive folder (no-op if Drive is not configured)
+      await this.driveService.createSeminarFolder(
+        id,
+        seminar.title,
+        seminar.date,
+      );
     }
 
     return updated;

@@ -4,6 +4,7 @@ import { SeminarStatus, RegistrationStatus } from 'shared-types';
 import { SeminarsService } from './seminars.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { JobsService } from '../../jobs/jobs.service';
+import { DriveService } from '../drive/drive.service';
 
 const mockSeminar = {
   id: 'seminar-uuid-1',
@@ -31,6 +32,10 @@ const mockJobsService = {
   cancelRegistrationClose: jest.fn().mockResolvedValue(undefined),
 };
 
+const mockDriveService = {
+  createSeminarFolder: jest.fn().mockResolvedValue(null),
+};
+
 const mockPrismaService = {
   seminar: {
     findMany: jest.fn(),
@@ -53,6 +58,7 @@ describe('SeminarsService', () => {
         SeminarsService,
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: JobsService, useValue: mockJobsService },
+        { provide: DriveService, useValue: mockDriveService },
       ],
     }).compile();
 
