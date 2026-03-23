@@ -212,6 +212,21 @@ export class RegistrationsService {
     });
   }
 
+  async togglePresence(id: string) {
+    const registration = await this.prisma.registration.findUnique({
+      where: { id },
+    });
+    if (!registration) throw new NotFoundException('Inscription non trouvée');
+
+    const newStatus =
+      registration.status === 'PRESENT' ? 'REGISTERED' : 'PRESENT';
+    return this.prisma.registration.update({
+      where: { id },
+      data: { status: newStatus },
+      include: { contact: true },
+    });
+  }
+
   async remove(id: string) {
     const registration = await this.prisma.registration.findUnique({
       where: { id },

@@ -10,6 +10,8 @@ import { ContactsModule } from './modules/contacts/contacts.module';
 import { RegistrationsModule } from './modules/registrations/registrations.module';
 import { EmailsModule } from './modules/emails/emails.module';
 import { QaModule } from './modules/qa/qa.module';
+import { CheckinModule } from './modules/checkin/checkin.module';
+import { DriveModule } from './modules/drive/drive.module';
 
 @Module({
   imports: [
@@ -39,6 +41,8 @@ import { QaModule } from './modules/qa/qa.module';
     RegistrationsModule,
     EmailsModule,
     QaModule,
+    CheckinModule,
+    DriveModule,
   ],
   providers: [
     {
