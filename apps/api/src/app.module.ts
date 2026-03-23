@@ -12,6 +12,7 @@ import { EmailsModule } from './modules/emails/emails.module';
 import { QaModule } from './modules/qa/qa.module';
 import { CheckinModule } from './modules/checkin/checkin.module';
 import { DriveModule } from './modules/drive/drive.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { DriveModule } from './modules/drive/drive.module';
     QaModule,
     CheckinModule,
     DriveModule,
+    DashboardModule,
   ],
   providers: [
     {
