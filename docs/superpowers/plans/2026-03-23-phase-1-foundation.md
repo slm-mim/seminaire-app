@@ -15,6 +15,7 @@
 ### Task 1: Initialize monorepo structure with pnpm + Turborepo
 
 **Files:**
+
 - Create: `pnpm-workspace.yaml`
 - Create: `turbo.json`
 - Modify: `package.json` (root)
@@ -57,8 +58,8 @@ Then replace `package.json` with:
 
 ```yaml
 packages:
-  - "apps/*"
-  - "packages/*"
+  - 'apps/*'
+  - 'packages/*'
 ```
 
 - [ ] **Step 3: Create .npmrc**
@@ -131,6 +132,7 @@ git commit -m "chore: initialize monorepo with pnpm + Turborepo"
 ### Task 2: Scaffold NestJS backend
 
 **Files:**
+
 - Create: `apps/api/` (full NestJS scaffold)
 - Create: `apps/api/nest-cli.json`
 - Create: `apps/api/tsconfig.json`
@@ -205,6 +207,7 @@ git commit -m "chore: scaffold NestJS backend in apps/api"
 ### Task 3: Scaffold Next.js frontend
 
 **Files:**
+
 - Create: `apps/web/` (full Next.js scaffold)
 - Create: `apps/web/turbo.json` (per-app env override)
 
@@ -266,6 +269,7 @@ git commit -m "chore: scaffold Next.js frontend in apps/web"
 ### Task 4: Create shared-types package
 
 **Files:**
+
 - Create: `packages/shared-types/package.json`
 - Create: `packages/shared-types/tsconfig.json`
 - Create: `packages/shared-types/src/index.ts`
@@ -507,6 +511,7 @@ git commit -m "feat: add shared-types package with enums and DTOs"
 ### Task 5: Create validation package (Zod schemas)
 
 **Files:**
+
 - Create: `packages/validation/package.json`
 - Create: `packages/validation/tsconfig.json`
 - Create: `packages/validation/src/index.ts`
@@ -707,6 +712,7 @@ git commit -m "feat: add validation package with Zod schemas"
 ### Task 6: Create eslint-config package
 
 **Files:**
+
 - Create: `packages/eslint-config/package.json`
 - Create: `packages/eslint-config/index.js`
 - Create: `packages/eslint-config/nestjs.js`
@@ -858,6 +864,7 @@ git commit -m "chore: add shared ESLint config package"
 ### Task 7: Set up Prettier + Husky + lint-staged
 
 **Files:**
+
 - Create: `.prettierrc`
 - Create: `.prettierignore`
 - Create: `.husky/pre-commit`
@@ -939,6 +946,7 @@ git commit -m "chore: add Prettier, Husky, and lint-staged"
 ### Task 8: Wire shared packages into apps
 
 **Files:**
+
 - Modify: `apps/api/package.json` (add workspace deps)
 - Modify: `apps/web/package.json` (add workspace deps)
 
@@ -1019,6 +1027,7 @@ git commit -m "chore: wire shared packages into api and web apps"
 ### Task 9: Set up Docker Compose for local PostgreSQL + Redis
 
 **Files:**
+
 - Create: `docker-compose.yml`
 - Create: `.env.example`
 - Modify: `.gitignore` (add .env)
@@ -1032,7 +1041,7 @@ services:
     container_name: seminaire-postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_USER: seminaire
       POSTGRES_PASSWORD: seminaire_dev
@@ -1045,7 +1054,7 @@ services:
     container_name: seminaire-postgres-test
     restart: unless-stopped
     ports:
-      - "5433:5432"
+      - '5433:5432'
     environment:
       POSTGRES_USER: seminaire
       POSTGRES_PASSWORD: seminaire_test
@@ -1056,7 +1065,7 @@ services:
     container_name: seminaire-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - '6379:6379'
 
 volumes:
   postgres_data:
@@ -1128,6 +1137,7 @@ git commit -m "chore: add Docker Compose for local PostgreSQL and Redis"
 ### Task 10: Set up Prisma with full schema
 
 **Files:**
+
 - Create: `apps/api/prisma/schema.prisma`
 - Modify: `apps/api/package.json` (add prisma deps)
 
@@ -1422,6 +1432,7 @@ git commit -m "feat: add Prisma schema with full data model"
 ### Task 11: Set up GitHub Actions CI
 
 **Files:**
+
 - Create: `.github/workflows/ci.yml`
 
 - [ ] **Step 1: Create .github/workflows/ci.yml**
@@ -1526,6 +1537,7 @@ git commit -m "ci: add GitHub Actions workflow for lint, build, and test"
 ### Task 12: Create Makefile for unified commands
 
 **Files:**
+
 - Create: `Makefile`
 
 - [ ] **Step 1: Create Makefile**
@@ -1604,11 +1616,12 @@ git commit -m "chore: add Makefile for unified dev commands"
 ### Task 13: Create CLAUDE.md project configuration
 
 **Files:**
+
 - Create: `CLAUDE.md`
 
 - [ ] **Step 1: Create CLAUDE.md**
 
-```markdown
+````markdown
 # CLAUDE.md — seminaire-app
 
 ## Project Overview
@@ -1631,21 +1644,22 @@ Seminar management application for non-technical organizers. Handles the full li
 make setup    # Install deps, generate Prisma client, run migrations, build
 make dev      # Start Docker services + both apps in watch mode
 ```
+````
 
 ## Key Commands
 
-| Command | Description |
-|---------|-------------|
-| `make dev` | Start all services (Docker + API + Web) |
-| `make dev-api` | Start backend only |
-| `make dev-web` | Start frontend only |
-| `make build` | Build all packages and apps |
-| `make lint` | Run ESLint on all apps |
-| `make test` | Run all tests |
-| `make format` | Format all files with Prettier |
-| `make db-migrate` | Run Prisma migrations |
-| `make db-studio` | Open Prisma Studio |
-| `make db-reset` | Reset database |
+| Command           | Description                             |
+| ----------------- | --------------------------------------- |
+| `make dev`        | Start all services (Docker + API + Web) |
+| `make dev-api`    | Start backend only                      |
+| `make dev-web`    | Start frontend only                     |
+| `make build`      | Build all packages and apps             |
+| `make lint`       | Run ESLint on all apps                  |
+| `make test`       | Run all tests                           |
+| `make format`     | Format all files with Prettier          |
+| `make db-migrate` | Run Prisma migrations                   |
+| `make db-studio`  | Open Prisma Studio                      |
+| `make db-reset`   | Reset database                          |
 
 ## Development URLs
 
@@ -1693,20 +1707,22 @@ packages/eslint-config/ → ESLint configs
 - All text in French (next-intl configured, ready for i18n)
 - Never commit `.env` files — use `.env.example` as reference
 - Shared packages must be built before apps (`turbo` handles this via `dependsOn`)
-```
+
+````
 
 - [ ] **Step 2: Commit**
 
 ```bash
 git add CLAUDE.md
 git commit -m "docs: add CLAUDE.md project configuration"
-```
+````
 
 ---
 
 ### Task 14: Update .gitignore and final cleanup
 
 **Files:**
+
 - Modify: `.gitignore`
 
 - [ ] **Step 1: Update .gitignore with all necessary entries**

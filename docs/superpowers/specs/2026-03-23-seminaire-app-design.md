@@ -14,11 +14,11 @@ Application de gestion de séminaires destinée à des utilisateurs non-techniqu
 
 ### Rôles
 
-| Rôle | Accès |
-|------|-------|
-| **Admin** | Accès total, gestion des utilisateurs, configuration |
-| **Organisateur** | Créer/gérer des séminaires, inscriptions, envoi de mails |
-| **Modérateur Q&A** | Gérer les questions en live pendant un événement |
+| Rôle               | Accès                                                    |
+| ------------------ | -------------------------------------------------------- |
+| **Admin**          | Accès total, gestion des utilisateurs, configuration     |
+| **Organisateur**   | Créer/gérer des séminaires, inscriptions, envoi de mails |
+| **Modérateur Q&A** | Gérer les questions en live pendant un événement         |
 
 ---
 
@@ -53,13 +53,13 @@ Application de gestion de séminaires destinée à des utilisateurs non-techniqu
 
 ### Hébergement (tout gratuit)
 
-| Service | Plateforme | Tier |
-|---------|-----------|------|
-| Frontend | Vercel | Gratuit |
-| Backend | Render | Gratuit (750h/mois) |
-| Base de données | Supabase PostgreSQL | Gratuit (500MB) |
-| Redis | Upstash | Gratuit (10k cmd/jour) |
-| Domaine | eu.org | Gratuit |
+| Service         | Plateforme          | Tier                   |
+| --------------- | ------------------- | ---------------------- |
+| Frontend        | Vercel              | Gratuit                |
+| Backend         | Render              | Gratuit (750h/mois)    |
+| Base de données | Supabase PostgreSQL | Gratuit (500MB)        |
+| Redis           | Upstash             | Gratuit (10k cmd/jour) |
+| Domaine         | eu.org              | Gratuit                |
 
 ### Monorepo
 
@@ -82,116 +82,125 @@ Application de gestion de séminaires destinée à des utilisateurs non-techniqu
 ### Entités
 
 #### User
-| Champ | Type | Contraintes |
-|-------|------|-------------|
-| id | UUID | PK |
-| email | String | Unique |
-| password | String | Hashé bcrypt |
-| firstName | String | |
-| lastName | String | |
-| role | Enum | ADMIN / ORGANIZER / MODERATOR |
-| createdAt | DateTime | |
-| updatedAt | DateTime | |
+
+| Champ     | Type     | Contraintes                   |
+| --------- | -------- | ----------------------------- |
+| id        | UUID     | PK                            |
+| email     | String   | Unique                        |
+| password  | String   | Hashé bcrypt                  |
+| firstName | String   |                               |
+| lastName  | String   |                               |
+| role      | Enum     | ADMIN / ORGANIZER / MODERATOR |
+| createdAt | DateTime |                               |
+| updatedAt | DateTime |                               |
 
 #### Seminar
-| Champ | Type | Contraintes |
-|-------|------|-------------|
-| id | UUID | PK |
-| title | String | |
-| description | Text | |
-| speaker | String | Intervenant |
-| price | Decimal | |
-| date | DateTime | |
-| location | String | Lieu |
-| image | String | Nullable, URL de l'image du séminaire |
-| registrationDeadline | Int | Heures avant fermeture auto |
-| reminderDays | Int | Jours avant relance auto |
-| status | Enum | DRAFT / PUBLISHED / CLOSED / COMPLETED |
-| driveFolder | String | Nullable, ID dossier Google Drive |
-| createdBy | UUID | FK → User |
-| createdAt | DateTime | |
-| updatedAt | DateTime | |
+
+| Champ                | Type     | Contraintes                            |
+| -------------------- | -------- | -------------------------------------- |
+| id                   | UUID     | PK                                     |
+| title                | String   |                                        |
+| description          | Text     |                                        |
+| speaker              | String   | Intervenant                            |
+| price                | Decimal  |                                        |
+| date                 | DateTime |                                        |
+| location             | String   | Lieu                                   |
+| image                | String   | Nullable, URL de l'image du séminaire  |
+| registrationDeadline | Int      | Heures avant fermeture auto            |
+| reminderDays         | Int      | Jours avant relance auto               |
+| status               | Enum     | DRAFT / PUBLISHED / CLOSED / COMPLETED |
+| driveFolder          | String   | Nullable, ID dossier Google Drive      |
+| createdBy            | UUID     | FK → User                              |
+| createdAt            | DateTime |                                        |
+| updatedAt            | DateTime |                                        |
 
 #### Contact
-| Champ | Type | Contraintes |
-|-------|------|-------------|
-| id | UUID | PK |
-| email | String | Unique |
-| firstName | String | |
-| lastName | String | |
-| city | String | |
-| phone | String | Nullable, optionnel |
-| brevoId | String | Nullable, ID Brevo |
-| source | Enum | BREVO_SYNC / MANUAL / REGISTRATION |
-| createdAt | DateTime | |
-| updatedAt | DateTime | |
+
+| Champ     | Type     | Contraintes                        |
+| --------- | -------- | ---------------------------------- |
+| id        | UUID     | PK                                 |
+| email     | String   | Unique                             |
+| firstName | String   |                                    |
+| lastName  | String   |                                    |
+| city      | String   |                                    |
+| phone     | String   | Nullable, optionnel                |
+| brevoId   | String   | Nullable, ID Brevo                 |
+| source    | Enum     | BREVO_SYNC / MANUAL / REGISTRATION |
+| createdAt | DateTime |                                    |
+| updatedAt | DateTime |                                    |
 
 #### Registration
-| Champ | Type | Contraintes |
-|-------|------|-------------|
-| id | UUID | PK |
-| seminarId | UUID | FK → Seminar |
-| contactId | UUID | FK → Contact |
-| status | Enum | REGISTERED / PRESENT / ABSENT |
-| isWalkIn | Boolean | Default false |
-| registeredAt | DateTime | |
+
+| Champ        | Type     | Contraintes                   |
+| ------------ | -------- | ----------------------------- |
+| id           | UUID     | PK                            |
+| seminarId    | UUID     | FK → Seminar                  |
+| contactId    | UUID     | FK → Contact                  |
+| status       | Enum     | REGISTERED / PRESENT / ABSENT |
+| isWalkIn     | Boolean  | Default false                 |
+| registeredAt | DateTime |                               |
 
 **Contrainte d'unicité** : (seminarId + contactId) — empêche les doublons.
 
 #### EmailTemplate
-| Champ | Type | Contraintes |
-|-------|------|-------------|
-| id | UUID | PK |
-| name | String | |
-| subject | String | |
-| htmlContent | Text | |
-| type | Enum | INVITATION / REMINDER / POST_EVENT |
-| createdAt | DateTime | |
-| updatedAt | DateTime | |
+
+| Champ       | Type     | Contraintes                        |
+| ----------- | -------- | ---------------------------------- |
+| id          | UUID     | PK                                 |
+| name        | String   |                                    |
+| subject     | String   |                                    |
+| htmlContent | Text     |                                    |
+| type        | Enum     | INVITATION / REMINDER / POST_EVENT |
+| createdAt   | DateTime |                                    |
+| updatedAt   | DateTime |                                    |
 
 #### EmailCampaign
-| Champ | Type | Contraintes |
-|-------|------|-------------|
-| id | UUID | PK |
-| seminarId | UUID | FK → Seminar |
-| templateId | UUID | FK → EmailTemplate |
-| type | Enum | INVITATION / AUTO_REMINDER / MANUAL_REMINDER / POST_EVENT |
-| recipientTarget | Enum | ALL_CONTACTS / ALL_REGISTERED / PRESENT_ONLY |
-| status | Enum | DRAFT / SENT / SCHEDULED |
-| sentAt | DateTime | Nullable |
-| recipientCount | Int | |
+
+| Champ           | Type     | Contraintes                                               |
+| --------------- | -------- | --------------------------------------------------------- |
+| id              | UUID     | PK                                                        |
+| seminarId       | UUID     | FK → Seminar                                              |
+| templateId      | UUID     | FK → EmailTemplate                                        |
+| type            | Enum     | INVITATION / AUTO_REMINDER / MANUAL_REMINDER / POST_EVENT |
+| recipientTarget | Enum     | ALL_CONTACTS / ALL_REGISTERED / PRESENT_ONLY              |
+| status          | Enum     | DRAFT / SENT / SCHEDULED                                  |
+| sentAt          | DateTime | Nullable                                                  |
+| recipientCount  | Int      |                                                           |
 
 #### QASession
-| Champ | Type | Contraintes |
-|-------|------|-------------|
-| id | UUID | PK |
-| seminarId | UUID | Nullable, FK → Seminar |
-| title | String | |
-| status | Enum | OPEN / CLOSED |
-| qrCodeUrl | String | |
-| createdAt | DateTime | |
+
+| Champ     | Type     | Contraintes            |
+| --------- | -------- | ---------------------- |
+| id        | UUID     | PK                     |
+| seminarId | UUID     | Nullable, FK → Seminar |
+| title     | String   |                        |
+| status    | Enum     | OPEN / CLOSED          |
+| qrCodeUrl | String   |                        |
+| createdAt | DateTime |                        |
 
 #### Question
-| Champ | Type | Contraintes |
-|-------|------|-------------|
-| id | UUID | PK |
-| sessionId | UUID | FK → QASession |
-| authorName | String | Nullable, anonyme par défaut |
-| gender | Enum | MALE / FEMALE |
-| content | Text | |
-| status | Enum | PENDING / APPROVED / REJECTED / ANSWERED |
-| order | Int | Position dans la file |
-| submittedAt | DateTime | |
+
+| Champ       | Type     | Contraintes                              |
+| ----------- | -------- | ---------------------------------------- |
+| id          | UUID     | PK                                       |
+| sessionId   | UUID     | FK → QASession                           |
+| authorName  | String   | Nullable, anonyme par défaut             |
+| gender      | Enum     | MALE / FEMALE                            |
+| content     | Text     |                                          |
+| status      | Enum     | PENDING / APPROVED / REJECTED / ANSWERED |
+| order       | Int      | Position dans la file                    |
+| submittedAt | DateTime |                                          |
 
 #### DriveSync
-| Champ | Type | Contraintes |
-|-------|------|-------------|
-| id | UUID | PK |
-| seminarId | UUID | FK → Seminar |
-| fileId | String | ID fichier Google Drive |
-| fileName | String | |
-| type | Enum | PRESENTATION / RESOURCE / ATTENDANCE_LIST |
-| syncedAt | DateTime | |
+
+| Champ     | Type     | Contraintes                               |
+| --------- | -------- | ----------------------------------------- |
+| id        | UUID     | PK                                        |
+| seminarId | UUID     | FK → Seminar                              |
+| fileId    | String   | ID fichier Google Drive                   |
+| fileName  | String   |                                           |
+| type      | Enum     | PRESENTATION / RESOURCE / ATTENDANCE_LIST |
+| syncedAt  | DateTime |                                           |
 
 ### Relations
 
@@ -336,29 +345,29 @@ Application de gestion de séminaires destinée à des utilisateurs non-techniqu
 
 ### Pages publiques (sans authentification)
 
-| Route | Description |
-|-------|-------------|
-| `/` | Landing page de présentation |
+| Route                | Description                                             |
+| -------------------- | ------------------------------------------------------- |
+| `/`                  | Landing page de présentation                            |
 | `/seminaires/{slug}` | Page publique d'un séminaire + formulaire d'inscription |
-| `/qa/{code}` | Page de soumission de questions (via QR code) |
-| `/qa/{code}/screen` | Écran de projection des questions approuvées |
+| `/qa/{code}`         | Page de soumission de questions (via QR code)           |
+| `/qa/{code}/screen`  | Écran de projection des questions approuvées            |
 
 ### Pages authentifiées (back-office)
 
-| Route | Description | Rôle minimum |
-|-------|-------------|-------------|
-| `/login` | Connexion | — |
-| `/dashboard` | Vue d'ensemble, stats | Organisateur |
-| `/dashboard/seminaires` | Liste des séminaires | Organisateur |
-| `/dashboard/seminaires/nouveau` | Créer un séminaire | Organisateur |
-| `/dashboard/seminaires/{id}` | Détail d'un séminaire | Organisateur |
-| `/dashboard/seminaires/{id}/accueil` | Liste d'accueil / check-in | Organisateur |
-| `/dashboard/seminaires/{id}/emails` | Gestion des envois de mails | Organisateur |
-| `/dashboard/seminaires/{id}/qa` | Modération Q&A temps réel | Modérateur |
-| `/dashboard/contacts` | Liste de contacts + sync Brevo | Organisateur |
-| `/dashboard/templates` | Éditeur de templates de mails | Organisateur |
-| `/dashboard/utilisateurs` | Gestion des utilisateurs et rôles | Admin |
-| `/dashboard/parametres` | Configuration (clés API, etc.) | Admin |
+| Route                                | Description                       | Rôle minimum |
+| ------------------------------------ | --------------------------------- | ------------ |
+| `/login`                             | Connexion                         | —            |
+| `/dashboard`                         | Vue d'ensemble, stats             | Organisateur |
+| `/dashboard/seminaires`              | Liste des séminaires              | Organisateur |
+| `/dashboard/seminaires/nouveau`      | Créer un séminaire                | Organisateur |
+| `/dashboard/seminaires/{id}`         | Détail d'un séminaire             | Organisateur |
+| `/dashboard/seminaires/{id}/accueil` | Liste d'accueil / check-in        | Organisateur |
+| `/dashboard/seminaires/{id}/emails`  | Gestion des envois de mails       | Organisateur |
+| `/dashboard/seminaires/{id}/qa`      | Modération Q&A temps réel         | Modérateur   |
+| `/dashboard/contacts`                | Liste de contacts + sync Brevo    | Organisateur |
+| `/dashboard/templates`               | Éditeur de templates de mails     | Organisateur |
+| `/dashboard/utilisateurs`            | Gestion des utilisateurs et rôles | Admin        |
+| `/dashboard/parametres`              | Configuration (clés API, etc.)    | Admin        |
 
 ### Navigation
 
