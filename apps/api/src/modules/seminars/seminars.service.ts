@@ -3,7 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { SeminarStatus } from 'shared-types';
+import { SeminarStatus, RegistrationStatus } from 'shared-types';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateSeminarInput, UpdateSeminarInput } from 'validation';
 
@@ -33,10 +33,24 @@ export class SeminarsService {
     return seminar;
   }
 
-  async findBySlug(slug: string) {
-    // slug = generated from title, stored as a computed field or looked up by title match
-    // For now, we'll use ID-based lookup for public pages
-    return this.findById(slug);
+  async findPublicById(id: string) {
+    const seminar = await this.prisma.seminar.findUnique({
+      where: { id, status: SeminarStatus.PUBLISHED },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        speaker: true,
+        price: true,
+        date: true,
+        location: true,
+        image: true,
+        registrationDeadline: true,
+        status: true,
+      },
+    });
+    if (!seminar) throw new NotFoundException('Séminaire non trouvé');
+    return seminar;
   }
 
   async create(data: CreateSeminarInput, userId: string) {
@@ -112,9 +126,10 @@ export class SeminarsService {
 
     for (const r of registrations) {
       stats.total += r._count;
-      if (r.status === 'REGISTERED') stats.registered = r._count;
-      if (r.status === 'PRESENT') stats.present = r._count;
-      if (r.status === 'ABSENT') stats.absent = r._count;
+      if (r.status === RegistrationStatus.REGISTERED)
+        stats.registered = r._count;
+      if (r.status === RegistrationStatus.PRESENT) stats.present = r._count;
+      if (r.status === RegistrationStatus.ABSENT) stats.absent = r._count;
     }
 
     return stats;

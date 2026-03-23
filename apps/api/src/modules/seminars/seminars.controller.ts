@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { UserRole, SeminarStatus } from 'shared-types';
 import { createSeminarSchema, updateSeminarSchema } from 'validation';
+import { z } from 'zod';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -33,7 +34,7 @@ export class SeminarsController {
   // Public endpoint - get single seminar by ID
   @Get('public/:id')
   findPublicById(@Param('id', ParseUUIDPipe) id: string) {
-    return this.seminarsService.findById(id);
+    return this.seminarsService.findPublicById(id);
   }
 
   @Get()
@@ -86,7 +87,9 @@ export class SeminarsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body('status') status: SeminarStatus,
   ) {
-    return this.seminarsService.updateStatus(id, status);
+    const statusSchema = z.nativeEnum(SeminarStatus);
+    const validatedStatus = statusSchema.parse(status);
+    return this.seminarsService.updateStatus(id, validatedStatus);
   }
 
   @Delete(':id')

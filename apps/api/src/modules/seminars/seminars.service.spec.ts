@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { SeminarStatus } from 'shared-types';
+import { SeminarStatus, RegistrationStatus } from 'shared-types';
 import { SeminarsService } from './seminars.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -231,6 +231,118 @@ describe('SeminarsService', () => {
 
       await expect(service.remove('nonexistent-id')).rejects.toThrow(
         NotFoundException,
+      );
+    });
+  });
+
+  describe('getStats', () => {
+    it('should return correct stats when registrations exist', async () => {
+      mockPrismaService.seminar.findUnique.mockResolvedValue(mockSeminar);
+      mockPrismaService.registration.groupBy.mockResolvedValue([
+        { status: RegistrationStatus.REGISTERED, _count: 10 },
+        { status: RegistrationStatus.PRESENT, _count: 7 },
+        { status: RegistrationStatus.ABSENT, _count: 3 },
+      ]);
+
+      const result = await service.getStats('seminar-uuid-1');
+
+      expect(result).toEqual({
+        total: 20,
+        registered: 10,
+        present: 7,
+        absent: 3,
+      });
+      expect(mockPrismaService.registration.groupBy).toHaveBeenCalledWith({
+        by: ['status'],
+        where: { seminarId: 'seminar-uuid-1' },
+        _count: true,
+      });
+    });
+
+    it('should return zeroed stats when there are no registrations', async () => {
+      mockPrismaService.seminar.findUnique.mockResolvedValue(mockSeminar);
+      mockPrismaService.registration.groupBy.mockResolvedValue([]);
+
+      const result = await service.getStats('seminar-uuid-1');
+
+      expect(result).toEqual({
+        total: 0,
+        registered: 0,
+        present: 0,
+        absent: 0,
+      });
+    });
+
+    it('should throw NotFoundException when seminar does not exist', async () => {
+      mockPrismaService.seminar.findUnique.mockResolvedValue(null);
+
+      await expect(service.getStats('nonexistent-id')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should return partial stats when only some statuses are present', async () => {
+      mockPrismaService.seminar.findUnique.mockResolvedValue(mockSeminar);
+      mockPrismaService.registration.groupBy.mockResolvedValue([
+        { status: RegistrationStatus.REGISTERED, _count: 5 },
+      ]);
+
+      const result = await service.getStats('seminar-uuid-1');
+
+      expect(result).toEqual({
+        total: 5,
+        registered: 5,
+        present: 0,
+        absent: 0,
+      });
+    });
+  });
+
+  describe('findPublicById', () => {
+    const publicSeminar = {
+      id: 'seminar-uuid-1',
+      title: 'Test Seminar',
+      description: 'A test seminar',
+      speaker: 'John Doe',
+      price: 100,
+      date: new Date('2026-06-01T10:00:00Z'),
+      location: 'Paris',
+      image: null,
+      registrationDeadline: 24,
+      status: SeminarStatus.PUBLISHED,
+    };
+
+    it('should return public fields for a published seminar', async () => {
+      mockPrismaService.seminar.findUnique.mockResolvedValue(publicSeminar);
+
+      const result = await service.findPublicById('seminar-uuid-1');
+
+      expect(result).toEqual(publicSeminar);
+      expect(mockPrismaService.seminar.findUnique).toHaveBeenCalledWith({
+        where: { id: 'seminar-uuid-1', status: SeminarStatus.PUBLISHED },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          speaker: true,
+          price: true,
+          date: true,
+          location: true,
+          image: true,
+          registrationDeadline: true,
+          status: true,
+        },
+      });
+    });
+
+    it('should throw NotFoundException when seminar is not found or not published', async () => {
+      mockPrismaService.seminar.findUnique.mockResolvedValue(null);
+
+      await expect(service.findPublicById('nonexistent-id')).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.findPublicById('nonexistent-id')).rejects.toThrow(
+        'Séminaire non trouvé',
       );
     });
   });
