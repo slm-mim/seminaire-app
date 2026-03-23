@@ -89,7 +89,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  seminars Seminar[]
+  seminars       Seminar[]
+  passwordResets PasswordReset[]
 
   @@map("users")
 }
@@ -222,4 +223,17 @@ model DriveSync {
   seminar Seminar @relation(fields: [seminarId], references: [id], onDelete: Cascade)
 
   @@map("drive_syncs")
+}
+
+model PasswordReset {
+  id        String    @id @default(uuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_resets")
 }

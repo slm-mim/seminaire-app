@@ -11,7 +11,11 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response, Request } from 'express';
-import { loginSchema } from 'validation';
+import {
+  loginSchema,
+  resetPasswordRequestSchema,
+  resetPasswordSchema,
+} from 'validation';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -77,5 +81,24 @@ export class AuthController {
   logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('refreshToken');
     return { message: 'Déconnexion réussie' };
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(@Body() body: { email: string }) {
+    const parsed = resetPasswordRequestSchema.parse(body);
+    await this.authService.requestPasswordReset(parsed.email);
+    return {
+      message:
+        'Si un compte existe avec cet email, un lien de réinitialisation a été envoyé',
+    };
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body() body: { token: string; password: string }) {
+    const parsed = resetPasswordSchema.parse(body);
+    await this.authService.resetPassword(parsed.token, parsed.password);
+    return { message: 'Mot de passe réinitialisé avec succès' };
   }
 }

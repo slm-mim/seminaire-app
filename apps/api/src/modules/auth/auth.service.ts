@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 
 interface JwtPayload {
@@ -55,5 +56,52 @@ export class AuthService {
     if (!user) throw new UnauthorizedException();
 
     return this.login({ id: user.id, email: user.email, role: user.role });
+  }
+
+  async requestPasswordReset(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) return; // Don't reveal if email exists
+
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    await this.prisma.passwordReset.create({
+      data: {
+        userId: user.id,
+        token,
+        expiresAt,
+      },
+    });
+
+    // TODO: Send email via Brevo in Phase 6
+    if (this.configService.get('NODE_ENV') === 'development') {
+      console.log(`[DEV] Password reset token for ${email}: ${token}`);
+    }
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const resetRecord = await this.prisma.passwordReset.findUnique({
+      where: { token },
+    });
+
+    if (
+      !resetRecord ||
+      resetRecord.usedAt ||
+      resetRecord.expiresAt < new Date()
+    ) {
+      throw new UnauthorizedException('Token invalide ou expiré');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    await this.prisma.passwordReset.update({
+      where: { id: resetRecord.id },
+      data: { usedAt: new Date() },
+    });
+
+    await this.prisma.user.update({
+      where: { id: resetRecord.userId },
+      data: { password: hashedPassword },
+    });
   }
 }
