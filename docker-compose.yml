@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: seminaire-postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: seminaire
+      POSTGRES_PASSWORD: seminaire_dev
+      POSTGRES_DB: seminaire_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: seminaire-postgres-test
+    restart: unless-stopped
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: seminaire
+      POSTGRES_PASSWORD: seminaire_test
+      POSTGRES_DB: seminaire_test
+
+  redis:
+    image: redis:7-alpine
+    container_name: seminaire-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+
+volumes:
+  postgres_data:
