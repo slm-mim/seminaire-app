@@ -18,6 +18,13 @@
     "db:studio": "pnpm --filter api prisma studio",
     "prepare": "husky"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/engines",
+      "bcrypt",
+      "prisma"
+    ]
+  },
   "devDependencies": {
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
