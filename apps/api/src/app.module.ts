@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { AppConfigModule } from './config/config.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -14,11 +14,14 @@ import { CheckinModule } from './modules/checkin/checkin.module';
 import { DriveModule } from './modules/drive/drive.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { JobsModule } from './jobs/jobs.module';
+import { SentryModule } from './sentry/sentry.module';
+import { SentryExceptionFilter } from './sentry/sentry.filter';
 
 @Module({
   imports: [
     AppConfigModule,
     PrismaModule,
+    SentryModule.register(),
     ThrottlerModule.forRoot([
       {
         name: 'short',
@@ -52,6 +55,10 @@ import { JobsModule } from './jobs/jobs.module';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: SentryExceptionFilter,
     },
   ],
 })
