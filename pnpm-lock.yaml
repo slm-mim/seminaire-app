@@ -38,6 +38,12 @@ importers:
       rxjs:
         specifier: ^7.8.1
         version: 7.8.2
+      shared-types:
+        specifier: workspace:*
+        version: link:../../packages/shared-types
+      validation:
+        specifier: workspace:*
+        version: link:../../packages/validation
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.2.0
@@ -123,6 +129,12 @@ importers:
       react-dom:
         specifier: 19.2.4
         version: 19.2.4(react@19.2.4)
+      shared-types:
+        specifier: workspace:*
+        version: link:../../packages/shared-types
+      validation:
+        specifier: workspace:*
+        version: link:../../packages/validation
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4
