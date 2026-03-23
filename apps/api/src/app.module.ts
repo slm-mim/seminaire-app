@@ -6,6 +6,7 @@ import { AppConfigModule } from './config/config.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { SeminarsModule } from './modules/seminars/seminars.module';
+import { ContactsModule } from './modules/contacts/contacts.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { SeminarsModule } from './modules/seminars/seminars.module';
     AuthModule,
     UsersModule,
     SeminarsModule,
+    ContactsModule,
   ],
   providers: [
     {
