@@ -1,0 +1,225 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  ORGANIZER
+  MODERATOR
+}
+
+enum SeminarStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  COMPLETED
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  PRESENT
+  ABSENT
+}
+
+enum QASessionStatus {
+  OPEN
+  CLOSED
+}
+
+enum QuestionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ANSWERED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum ContactSource {
+  BREVO_SYNC
+  MANUAL
+  REGISTRATION
+}
+
+enum EmailTemplateType {
+  INVITATION
+  REMINDER
+  POST_EVENT
+}
+
+enum CampaignType {
+  INVITATION
+  AUTO_REMINDER
+  MANUAL_REMINDER
+  POST_EVENT
+}
+
+enum CampaignStatus {
+  DRAFT
+  SENT
+  SCHEDULED
+}
+
+enum RecipientTarget {
+  ALL_CONTACTS
+  ALL_REGISTERED
+  PRESENT_ONLY
+}
+
+enum DriveSyncType {
+  PRESENTATION
+  RESOURCE
+  ATTENDANCE_LIST
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      UserRole @default(ORGANIZER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  seminars Seminar[]
+
+  @@map("users")
+}
+
+model Seminar {
+  id                   String        @id @default(uuid())
+  title                String
+  description          String
+  speaker              String
+  price                Decimal       @db.Decimal(10, 2)
+  date                 DateTime
+  location             String
+  image                String?
+  registrationDeadline Int
+  reminderDays         Int
+  status               SeminarStatus @default(DRAFT)
+  driveFolder          String?
+  createdBy            String
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  creator        User            @relation(fields: [createdBy], references: [id])
+  registrations  Registration[]
+  qaSession      QASession?
+  emailCampaigns EmailCampaign[]
+  driveSyncs     DriveSync[]
+
+  @@map("seminars")
+}
+
+model Contact {
+  id        String        @id @default(uuid())
+  email     String        @unique
+  firstName String
+  lastName  String
+  city      String
+  phone     String?
+  brevoId   String?
+  source    ContactSource @default(MANUAL)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  registrations Registration[]
+
+  @@map("contacts")
+}
+
+model Registration {
+  id           String             @id @default(uuid())
+  seminarId    String
+  contactId    String
+  status       RegistrationStatus @default(REGISTERED)
+  isWalkIn     Boolean            @default(false)
+  registeredAt DateTime           @default(now())
+
+  seminar Seminar @relation(fields: [seminarId], references: [id], onDelete: Cascade)
+  contact Contact @relation(fields: [contactId], references: [id])
+
+  @@unique([seminarId, contactId])
+  @@map("registrations")
+}
+
+model EmailTemplate {
+  id          String            @id @default(uuid())
+  name        String
+  subject     String
+  htmlContent String
+  type        EmailTemplateType
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  campaigns EmailCampaign[]
+
+  @@map("email_templates")
+}
+
+model EmailCampaign {
+  id              String          @id @default(uuid())
+  seminarId       String
+  templateId      String
+  type            CampaignType
+  recipientTarget RecipientTarget
+  status          CampaignStatus  @default(DRAFT)
+  sentAt          DateTime?
+  recipientCount  Int             @default(0)
+
+  seminar  Seminar       @relation(fields: [seminarId], references: [id], onDelete: Cascade)
+  template EmailTemplate @relation(fields: [templateId], references: [id])
+
+  @@map("email_campaigns")
+}
+
+model QASession {
+  id        String          @id @default(uuid())
+  seminarId String?         @unique
+  title     String
+  status    QASessionStatus @default(OPEN)
+  qrCodeUrl String?
+  createdAt DateTime        @default(now())
+
+  seminar   Seminar?   @relation(fields: [seminarId], references: [id], onDelete: Cascade)
+  questions Question[]
+
+  @@map("qa_sessions")
+}
+
+model Question {
+  id          String         @id @default(uuid())
+  sessionId   String
+  authorName  String?
+  gender      Gender
+  content     String
+  status      QuestionStatus @default(PENDING)
+  order       Int            @default(0)
+  submittedAt DateTime       @default(now())
+
+  session QASession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("questions")
+}
+
+model DriveSync {
+  id        String        @id @default(uuid())
+  seminarId String
+  fileId    String
+  fileName  String
+  type      DriveSyncType
+  syncedAt  DateTime      @default(now())
+
+  seminar Seminar @relation(fields: [seminarId], references: [id], onDelete: Cascade)
+
+  @@map("drive_syncs")
+}
