@@ -71,7 +71,7 @@ export class UsersService {
 
     const user = await this.prisma.user.update({
       where: { id },
-      data,
+      data: data as Parameters<typeof this.prisma.user.update>[0]['data'],
     });
 
     return this.exclude(user, ['password']);

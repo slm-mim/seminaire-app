@@ -10,7 +10,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Response, Request } from 'express';
+import type { Response, Request } from 'express';
 import {
   loginSchema,
   resetPasswordRequestSchema,
