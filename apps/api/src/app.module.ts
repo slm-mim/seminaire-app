@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { SeminarsModule } from './modules/seminars/seminars.module';
 import { ContactsModule } from './modules/contacts/contacts.module';
+import { RegistrationsModule } from './modules/registrations/registrations.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ContactsModule } from './modules/contacts/contacts.module';
     UsersModule,
     SeminarsModule,
     ContactsModule,
+    RegistrationsModule,
   ],
   providers: [
     {
