@@ -1,0 +1,17 @@
+node_modules
+.next
+dist
+coverage
+.git
+.github
+.turbo
+.superpowers
+docs/
+*.md
+!package.json
+docker-compose.yml
+docker-compose.prod.yml
+.env
+.env.*
+!.env.example
+apps/web
